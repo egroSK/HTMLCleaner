@@ -1,5 +1,6 @@
 var xml = require('../lib/node-xml');
 var types = require('./types.js');
+var fs = require('fs');
 
 module.exports = HTMLParser;
 
@@ -11,8 +12,11 @@ HTMLParser.prototype.parseString = function (string) {
 	this.xmlParser.parseString('<root>' + string + '</root>');
 };
 
-HTMLParser.prototype.parseFile = function (fileName) {
-	this.xmlParser.parseFile(fileName);
+HTMLParser.prototype.parseFile = function (filename) {
+	var that = this;
+	fs.readFile(filename, 'utf8', function (err, data) {
+		that.parseString(data);
+	});
 };
 
 var tags;
