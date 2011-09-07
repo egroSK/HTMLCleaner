@@ -14,10 +14,13 @@ module.exports = {
 		tag_name: 'h3',
 	},
 	'h4': {
-		tag_name: 'h3',
+		tag_name: 'h4',
 	},
 	'h5': {
-		tag_name: 'h3',
+		tag_name: 'h5',
+	},
+	'h6': {
+		tag_name: 'h6',
 	},
 	
 	// Inline
@@ -31,7 +34,7 @@ module.exports = {
 		},
 	},
 	
-	// Inline styles
+	// Styles - inline
 	'b': {
 		tag_name: 'strong',
 		inline: true,
@@ -48,6 +51,32 @@ module.exports = {
 		tag_name: 'em',
 		inline: true,
 	},
+	'sub': {
+		tag_name: 'sub',
+		inline: true,
+	},
+	'sup': {
+		tag_name: 'sup',
+		inline: true,
+	},
+	
+	'code': {
+		tag_name: 'code',
+		inline: true,
+	},
+	'cite': {
+		tag_name: 'quote',
+		inline: true,
+	},
+	'mark': {
+		tag_name: 'highlight',
+		inline: true,
+	},
+	
+	// Styles - block
+	'blockquote': {
+		tag_name: 'quote',
+	},
 	
 	// Standelone
 	'img': {
@@ -56,12 +85,15 @@ module.exports = {
 		attributes: {
 			'src': function (value) {
 				return 'src="' + value + '"';
-			}
-		}
+			},
+		},
 	},
 	
 	// Replace with another tag
 	'br': {
 		replace: 'p',
-	}
+	},
+	'div': {
+		replace: 'p',
+	},
 }
