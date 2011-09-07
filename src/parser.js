@@ -30,11 +30,15 @@ function output(str) {
 };
 
 function writeStartTag(elem, attrs) {
-	output('<' + types[elem].tag_name + handleAttributes(elem, attrs) + '>');
+	if (types[elem].tag_name) {
+		output('<' + types[elem].tag_name + handleAttributes(elem, attrs) + '>');
+	}
 };
 
 function writeEndTag(elem) {
-	output('</' + types[elem].tag_name + '>');
+	if (types[elem].tag_name) {
+		output('</' + types[elem].tag_name + '>');
+	}
 };
 
 function writeStandaloneTag(elem, attrs) {

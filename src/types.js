@@ -73,6 +73,10 @@ module.exports = {
 		inline: true,
 	},
 	
+	'span': {
+		inline: true,
+	},
+	
 	// Styles - block
 	'blockquote': {
 		tag_name: 'quote',
