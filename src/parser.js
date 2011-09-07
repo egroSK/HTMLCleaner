@@ -98,7 +98,7 @@ function handleBlockStartTag(elem, attrs) {
 
 		// Close
 		while ((!end) && (tags_el = tags.pop())) {
-			if (!types[tags_el].inline) {
+			if (types[tags_el] && !types[tags_el].inline) {
 				end = true;
 			} else {
 				tmp_tags.push(tags_el);
