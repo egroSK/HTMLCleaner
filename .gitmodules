@@ -1,0 +1,3 @@
+[submodule "lib/node-xml"]
+	path = lib/node-xml
+	url = git@github.com:egroSK/node-xml.git
