@@ -87,6 +87,10 @@ function handleAttributes(elem, attrs) {
 		});
 	}
 	
+	if (types[elem].tag_attr) {
+		out_attrs.push(types[elem].tag_attr);
+	}
+	
 	return (out_attrs.length > 0) ? ' ' + out_attrs.join(' ')  : '';
 }
 
