@@ -21,7 +21,7 @@ HTMLParser.prototype.parseFile = function (filename) {
 
 var tags;
 var block_opened;
-var paragraph_el = types['p'].tag_name;
+var paragraph_el = 'p';
 
 /* Output functions */
 
