@@ -98,6 +98,9 @@ function handleAttributes(elem, attrs) {
 
 function handleStartTag(elem, attrs, prefix) {
 	if (types[elem]) {
+		if (types[elem].parent_el && types[elem].parent_el.length > 0) {
+			checkParentNeeds(elem);
+		}
 		if (types[elem].standelone) {
 			return handleStandaloneTag(elem, attrs);
 		}
@@ -112,6 +115,20 @@ function handleStartTag(elem, attrs, prefix) {
 		}
 	} else {
 		tags.push(elem);
+	}
+}
+
+function checkParentNeeds(elem) {
+	var need_start = true;
+
+	types[elem].parent_el.forEach(function (el) {
+		if (tags.indexOf(el) > -1) {
+			need_start = false;
+		}
+	});
+
+	if (need_start) {
+		handleStartTag(types[elem].parent_el[0]);
 	}
 }
 
