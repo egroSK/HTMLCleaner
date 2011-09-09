@@ -1,6 +1,6 @@
 module.exports = {
 	'p': {
-		tag_name: 'p',	
+		tag_name: 'paragraph',
 	},
 	
 	// Headers
@@ -23,6 +23,42 @@ module.exports = {
 		tag_name: 'h6',
 	},
 	
+	// Lists
+	'ul': {
+		tag_name: 'text',
+		tag_attr: 'list="arrow"',
+		inline: true,
+	},
+	'ol': {
+		tag_name: 'text',
+		tag_attr: 'list="num"',
+	},
+	'li': {
+		
+		parent_el: ['ul', 'ol'],
+		inline: true,
+	},
+	
+	// Table
+	'table': {
+		tag_name: 'table',
+	},
+	'tr': {
+		tag_name: 'tr',
+		parent_el: ['table'],
+		inline: true,
+	},
+	'th': {
+		tag_name: 'th',
+		parent_el: ['tr'],
+		inline: true,
+	},
+	'td': {
+		tag_name: 'td',
+		parent_el: ['tr'],
+		inline: true,
+	},
+	
 	// Inline
 	'a': {
 		tag_name: 'a',
@@ -34,7 +70,7 @@ module.exports = {
 		},
 	},
 	
-	// Styles - inline
+	// Styles
 	'b': {
 		tag_name: 'strong',
 		inline: true,
@@ -59,6 +95,18 @@ module.exports = {
 		tag_name: 'sup',
 		inline: true,
 	},
+	'u': {
+		tag_name: 'u',
+		inline: true,
+	},
+	'strike': {
+		tag_name: 'strike',
+		inline: true,
+	},
+	's': {
+		tag_name: 'strike',
+		inline: true,
+	},
 	
 	'code': {
 		tag_name: 'code',
@@ -68,18 +116,13 @@ module.exports = {
 		tag_name: 'quote',
 		inline: true,
 	},
-	'mark': {
-		tag_name: 'highlight',
-		inline: true,
-	},
-	
-	'span': {
-		inline: true,
-	},
-	
+
 	// Styles - block
 	'blockquote': {
 		tag_name: 'quote',
+	},
+	'pre': {
+		tag_name: 'code',
 	},
 	
 	// Standelone
@@ -91,6 +134,32 @@ module.exports = {
 				return 'src="' + value + '"';
 			},
 		},
+	},
+	
+	// Write only content
+	'acronym': {
+		inline: true,
+	},
+	'font': {
+		inline: true,
+	},
+	'ins': {
+		inline: true,
+	},
+	'small': {
+		inline: true,
+	},
+	'span': {
+		inline: true,
+	},
+	'st1': {
+		inline: true,
+	},
+	'var': {
+		inline: true,
+	},
+	'wbr': {
+		inline: true,
 	},
 	
 	// Replace with another tag
