@@ -22,11 +22,13 @@ HTMLParser.prototype.parseFile = function (filename) {
 var tags;
 var block_opened;
 var paragraph_el = 'p';
+var ws;
 
 /* Output functions */
 
 function output(str) {
-	console.log(str);
+	// console.log(str);
+	ws.write(str);
 };
 
 function writeStartTag(elem, attrs) {
@@ -162,8 +164,12 @@ function handleEndTag(elem) {
 
 function parse(cb) {
 	cb.onStartDocument(function () {
+		ws = fs.createWriteStream('output.xml', {encoding: 'utf8'});
 		tags = [];
 		block_opened = false;
+		cdata_opened = false;
+		output('<?xml version="1.0" encoding="UTF-8"?>');
+		output('<root>');
 	});
 	
 	cb.onEndDocument(function () {
