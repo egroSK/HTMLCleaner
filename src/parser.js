@@ -77,7 +77,7 @@ function handleAttributes(elem, attrs) {
 
 /* Handling tags */
 
-function handleStartTag(elem, attrs) {
+function handleStartTag(elem, attrs, prefix) {
 	if (types[elem]) {
 		if (types[elem].standelone) {
 			return handleStandaloneTag(elem, attrs);
@@ -177,15 +177,25 @@ function parse(cb) {
 		while (i--) {
 			handleEndTag(tags[i]);
 		}
+		output('</root>');
 	});
 	
 	cb.onStartElementNS(function (elem, attrs, prefix, uri, namespaces) {
 		if (elem === 'root') { return; }
-		handleStartTag(elem, attrs);
+		if (prefix) { 
+			elem = prefix; 
+		}
+		
+		handleStartTag(elem.toLowerCase(), attrs, prefix);
 	});
 
 	cb.onEndElementNS(function (elem, prefix, uri) {
 		if (elem === 'root') { return; }
+		if (prefix) { 
+			elem = prefix; 
+		}
+		elem = elem.toLowerCase();
+		
 		var tmp_tags = [];
 		var tags_el;
 		var end = false;
