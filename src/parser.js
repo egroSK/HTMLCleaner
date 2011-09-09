@@ -57,7 +57,22 @@ function startBlock() {
 	if (!block_opened) {
 		tags.push(paragraph_el);
 		block_opened = true;
+		closeCDATA();
 		writeStartTag(paragraph_el);
+	}
+}
+
+function openCDATA() {
+	if (!cdata_opened) {
+		cdata_opened = true;
+		output('<![CDATA[');
+	}
+}
+
+function closeCDATA() {
+	if (cdata_opened) {
+		cdata_opened = false;
+		output(']]>');
 	}
 }
 
@@ -115,6 +130,7 @@ function handleBlockStartTag(elem, attrs) {
 		// Write
 		tags.push(elem);
 		block_opened = true;
+		closeCDATA();
 		writeStartTag(elem, attrs);
 		
 		// Reopen
@@ -125,6 +141,7 @@ function handleBlockStartTag(elem, attrs) {
 	} else {
 		tags.push(elem);
 		block_opened = true;
+		closeCDATA();
 		writeStartTag(elem, attrs);
 	}
 }
@@ -134,6 +151,7 @@ function handleInlineStartTag(elem, attrs) {
 		startBlock();
 	}
 	tags.push(elem);
+	closeCDATA();
 	writeStartTag(elem, attrs);
 }
 
@@ -143,9 +161,12 @@ function handleStandaloneTag(elem, attrs) {
 
 function handleText(text) {
 	var last_tag = tags[tags.length - 1];
-	if (types[last_tag]) {
+	if ((tags.length === 0) || (types[last_tag])) {
 		if (!block_opened) {
 			startBlock();
+		}
+		if (!cdata_opened) {
+			openCDATA();
 		}
 		writeText(text);
 	}
@@ -155,6 +176,9 @@ function handleEndTag(elem) {
 	if (types[elem]) {
 		if (block_opened && !types[elem].inline) {
 			block_opened = false;
+		}
+		if (cdata_opened) {
+			closeCDATA();
 		}
 		writeEndTag(elem);
 	}
