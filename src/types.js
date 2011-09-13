@@ -1,172 +1,284 @@
-module.exports = {
+var types = {
+	// Block elements
 	'p': {
-		tag_name: 'paragraph',
+		tag_name: 'text',
+		type: 'block',
+		child_types: ['%inline%', '%text%'],
+		empty: true,
 	},
 	
-	// Headers
 	'h1': {
 		tag_name: 'h1',
+		type: 'block',
+		child_types: ['%inline%', '%text%'],
 	},
 	'h2': {
 		tag_name: 'h2',
+		type: 'block',
+		child_types: ['%inline%', '%text%'],
 	},
 	'h3': {
 		tag_name: 'h3',
+		type: 'block',
+		child_types: ['%inline%', '%text%'],
 	},
 	'h4': {
 		tag_name: 'h4',
+		type: 'block',
+		child_types: ['%inline%', '%text%'],
 	},
 	'h5': {
 		tag_name: 'h5',
+		type: 'block',
+		child_types: ['%inline%', '%text%'],
 	},
 	'h6': {
 		tag_name: 'h6',
+		type: 'block',
+		child_types: ['%inline%', '%text%'],
+	},
+	
+	'blockquote': {
+		tag_name: 'quote',
+		type: 'block',
+		child_types: ['%flow%'],
+	},
+	
+	// Inline elements
+	'a': {
+		tag_name: 'a',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+		attributes: {
+			'href': function (value) {
+				return ['href', value];
+			}
+		},
+	},
+	'b': {
+		tag_name: 'strong',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'strong': {
+		tag_name: 'strong',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'i': {
+		tag_name: 'em',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'em': {
+		tag_name: 'em',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'sub': {
+		tag_name: 'sub',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'sup': {
+		tag_name: 'sup',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'u': {
+		tag_name: 'u',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'strike': {
+		tag_name: 'strike',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'code': {
+		tag_name: 'code',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'cite': {
+		tag_name: 'cite',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
+	'img': {
+		tag_name: 'img',
+		type: 'inline',
+		standelone: true,
+		attributes: {
+			'src': function (value) {
+				return ['src', value];
+			},
+		},
 	},
 	
 	// Lists
 	'ul': {
-		tag_name: 'text',
-		tag_attr: 'list="arrow"',
-		inline: true,
+		type: 'block',
+		child_types: ['%list_item%']
 	},
 	'ol': {
-		tag_name: 'text',
-		tag_attr: 'list="num"',
+		type: 'block',
+		child_types: ['%list_item%']
 	},
 	'li': {
-		
-		parent_el: ['ul', 'ol'],
-		inline: true,
+		tag_name: 'text',
+		tag_attrs: {
+		'type': function (parent) {
+				return ['type', (parent === 'ol') ? 'number' : 'arrow'];
+			}
+		},
+		type: 'list_item',
+		parent_types: ['ul', 'ol'],
+		child_types: ['%flow%'],
+	},
+	
+	'dl': {
+		tag_name: 'text',
+		type: 'block',
+		child_types: ['%def_list_item%'],
+	},
+	'dt': {
+		tag_name: 'strong',
+		type: 'def_list_item',
+		parent_types: ['dl'],
+		child_types: ['%inline%', '%text%'],
+	},
+	'dd': {
+		type: 'def_list_item',
+		parent_types: ['dl'],
+		child_types: ['%flow%'],
 	},
 	
 	// Table
 	'table': {
 		tag_name: 'table',
+		type: 'block',
+		child_types: ['tr'],
 	},
 	'tr': {
 		tag_name: 'tr',
-		parent_el: ['table'],
-		inline: true,
-	},
-	'th': {
-		tag_name: 'th',
-		parent_el: ['tr'],
-		inline: true,
+		type: 'table_row',
+		parent_types: ['table'],
+		child_types: ['%table_content%'], 
 	},
 	'td': {
 		tag_name: 'td',
-		parent_el: ['tr'],
-		inline: true,
+		type: 'table_content',
+		parent_types: ['%table_row%'],
+		child_types: ['%flow%'],
+	},
+	'th': {
+		tag_name: 'th',
+		type: 'table_content',
+		parent_types: ['%table_row%'],
+		child_types: ['%flow%'],
 	},
 	
-	// Inline
-	'a': {
-		tag_name: 'a',
-		inline: true,
-		attributes: {
-			'href': function (value) {
-				return 'href="' + value + '"'; 
-			}
-		},
-	},
-	
-	// Styles
-	'b': {
-		tag_name: 'strong',
-		inline: true,
-	},
-	'strong': {
-		tag_name: 'strong',
-		inline: true,
-	},
-	'i': {
-		tag_name: 'em',
-		inline: true,
-	},
-	'em': {
-		tag_name: 'em',
-		inline: true,
-	},
-	'sub': {
-		tag_name: 'sub',
-		inline: true,
-	},
-	'sup': {
-		tag_name: 'sup',
-		inline: true,
-	},
-	'u': {
-		tag_name: 'u',
-		inline: true,
-	},
-	'strike': {
-		tag_name: 'strike',
-		inline: true,
-	},
-	's': {
-		tag_name: 'strike',
-		inline: true,
-	},
-	
-	'code': {
-		tag_name: 'code',
-		inline: true,
-	},
-	'cite': {
-		tag_name: 'quote',
-		inline: true,
-	},
-
-	// Styles - block
-	'blockquote': {
-		tag_name: 'quote',
-	},
-	'pre': {
-		tag_name: 'code',
-	},
-	
-	// Standelone
-	'img': {
-		tag_name: 'img',
-		standelone: true,
-		attributes: {
-			'src': function (value) {
-				return 'src="' + value + '"';
-			},
-		},
-	},
-	
-	// Write only content
+	// Copy content
 	'acronym': {
-		inline: true,
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
 	},
 	'font': {
-		inline: true,
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
 	},
 	'ins': {
-		inline: true,
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
 	},
 	'small': {
-		inline: true,
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
 	},
 	'span': {
-		inline: true,
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
 	},
 	'st1': {
-		inline: true,
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
 	},
 	'var': {
-		inline: true,
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
 	},
 	'wbr': {
-		inline: true,
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
 	},
-	
-	// Replace with another tag
+
+	// Replace
 	'br': {
 		replace: 'p',
 	},
 	'div': {
 		replace: 'p',
 	},
+	'pre': {
+		replace: 'p',
+	},
 }
+
+module.exports = Types();
+
+function Types() {
+	var types_group = {};
+	
+	Object.keys(types).forEach(function (type_name) {
+		var type = types[type_name];
+		if (!types_group[type.type]) {
+			types_group[type.type] = [type_name];
+		} else {
+			types_group[type.type].push(type_name);
+		}
+	});
+	
+	types_group['text'] = ['text'];
+	types_group['flow'] = [].concat(types_group['block'], types_group['inline'], types_group['text']);
+	
+	Object.keys(types).forEach(function (type_name) {
+		var type = types[type_name];
+		
+		if (type.child_types) {
+			type['childs'] = {};
+			type.child_types.forEach(function (child_type) {
+				var w_type = child_type.match(/%(\w*)%/);
+				if (w_type) {
+					var w_types_group = types_group[w_type[1]];
+					if (w_types_group) {
+						for (var i = 0; i < w_types_group.length; i++) {
+							type['childs'][w_types_group[i]] = {};
+						} 
+					}
+				} else {
+					type['childs'][child_type] = {}
+				}
+			});
+		}
+		
+		if (type.parent_types) {
+			type['parents'] = {};
+			type.parent_types.forEach(function (parent_type) {
+				var w_type = parent_type.match(/%(\w*)%/);
+				if (w_type) {
+					var w_types_group = types_group[w_type[1]];
+					if (w_types_group) {
+						for (var i = 0; i < w_types_group.length; i++) {
+							type['parents'][w_types_group[i]] = {};
+						}
+					}
+				} else {
+					type['parents'][parent_type] = {}
+				}
+			});
+		}	
+	});
+	
+	return types;
+};

@@ -1,1 +1,1 @@
-module.exports = require('./src/parser.js');
+module.exports = require('./src/cleaner.js');
