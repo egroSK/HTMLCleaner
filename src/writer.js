@@ -63,7 +63,7 @@ function getAttributes(elem, attrs) {
 	
 	var i = attrs.length;
 	while (i--) {
-		out_attrs.push(attrs[i][0] + '="' + attrs[i][1] + "'");
+		out_attrs.push(attrs[i][0] + '="' + attrs[i][1] + '"');
 	}
 	
 	return (out_attrs.length > 0) ? ' ' + out_attrs.join(' ')  : '';
