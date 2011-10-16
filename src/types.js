@@ -120,7 +120,29 @@ var types = {
 			},
 		},
 	},
-	
+
+	// New types
+	'_highlight': {
+		tag_name: 'highlight',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+		attributes: {
+			'color': function (value) {
+				return ['color', value];
+			},
+		},
+	},
+	'_font': {
+		tag_name: 'font',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+		attributes: {
+			'color': function (value) {
+				return ['color', value];
+			},
+		},
+	},
+
 	// Lists
 	'ul': {
 		type: 'block',
@@ -189,10 +211,6 @@ var types = {
 		type: 'inline',
 		child_types: ['%inline%', '%text%'],
 	},
-	'font': {
-		type: 'inline',
-		child_types: ['%inline%', '%text%'],
-	},
 	'ins': {
 		type: 'inline',
 		child_types: ['%inline%', '%text%'],
@@ -216,6 +234,14 @@ var types = {
 	'wbr': {
 		type: 'inline',
 		child_types: ['%inline%', '%text%'],
+	},
+	// Copy content + Attributes as style
+	'font': {
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+		attrs_as_style: {
+			'color': 'color',
+		},
 	},
 
 	// Replace

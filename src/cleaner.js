@@ -10,6 +10,7 @@ var sys = require('sys');
 var fs = require('fs');
 var xml = require('../lib/node-xml');
 var types = require('./types.js');
+var Styles = require('./styles.js');
 var Writer = require('./writer.js');
 
 var ROOT_EL = 'HTMLCleaner_root';
@@ -151,8 +152,50 @@ function openTag(elem, attrs) {
 	if (act_type.type === 'block') {
 		block.push(elem);
 	}
+
+	// Handling tags with attrs as inline styles
+	if ((act_type['attrs_as_style']) && (attrs)) {
+		for (var i = 0, ii = attrs.length; i < ii; i++) {
+			var attr_name = attrs[i][0];
+			var attr_value = attrs[i][1];
+			var act_style_name = act_type['attrs_as_style'][attr_name];
+
+			if ((act_style_name) && (Styles[act_style_name])) {
+				var result = Styles[act_style_name](attr_value);
+				if (result) {
+					openTag(result[0], (result[1]) ? [result[1]] : []);
+				}
+			}
+		}
+	}
 	
-	// TODO: Handle inline styles
+	// Handling inline styles
+	if (attrs) {
+		var style_attr;
+		var i = attrs.length;
+		while (i--) {
+			if (attrs[i][0] === 'style') {
+				style_attr = attrs[i][1];
+				break;
+			}
+		}
+		
+		if (style_attr) {
+			var styles = style_attr.split(/\s*;\s*/);
+			for (var i = 0, ii = styles.length; i < ii; i++) {
+				var style = styles[i].split(/\s*:\s*/);
+				var style_name = style[0];
+				var style_value = style[1];
+				
+				if (Styles[style_name]) {
+					var result = Styles[style_name](style_value);
+					if (result) {
+						openTag(result[0], (result[1]) ? [result[1]] : []);
+					} 
+				}
+			}
+		}
+	} // if attrs
 }
 
 function text(txt) {
