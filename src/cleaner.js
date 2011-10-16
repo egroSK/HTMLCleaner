@@ -79,7 +79,7 @@ function _cleanAttributes(elem, attrs) {
 	var act_type = types[elem];
 	
 	if (!act_type) {
-		return;
+		return out_attrs;
 	}
 	
 	if (act_type.attributes) {
@@ -106,47 +106,47 @@ function _cleanAttributes(elem, attrs) {
 function openTag(elem, attrs) {
 	var act_type = types[elem];
 	
-	// Zistit, ci je v types
+	// Find out, if element is in types
 	if (!act_type) {
 		return opened.push(elem);
 	}
 	
-	// Zistit, ci je replace
+	// Find out, if element is replacable
 	if (act_type.replace) {
 		return openTag(act_type.replace, attrs);
 	}
 	
-	// Zistit, ci existuje parent
+	// Find out, if parent exists
 	if (opened.length > 0) {
-		// Zisti, ci moze byt v parentovi
+		// Find out, if element could be in parent
 		var parent = _getParent();
-		while ((opened.length > 0) && ((!types[parent]) || (!types[parent].childs[elem]))) {
+		while ((opened.length > 0) && ((!types[parent]) || (!types[parent]['childs'][elem]))) {
 			closeTag(parent);
 			parent = _getParent();
 		}
 	}
 	
-	// Zisti, ci ma vyzadovaneho parent
+	// Find out, if element has required parent
 	var parent = _getParent();
 	if ((act_type.parents) && (!act_type.parents[parent])) {
 		openTag(Object.keys(act_type.parents)[0]);
 	}
-	// Zisti, ci je blokovy pri inline -- TODO: remove dependency
+	// Find out, if one of parent elements is block, when there is a inline element -- TODO: remove dependency
 	if ((act_type.type === 'inline') && (block.length === 0)) {
 		openTag('p');
 	}
 	
-	// Zisti, ci je standelone
+	// Find out, if element is standelone
 	if (act_type.standelone) {
 		return output.push([STANDELONE_ELEM, elem, _cleanAttributes(elem, attrs)]);
 	}
 	
-	// Zisti, ci uz je otvoreny ten isty (pri inline)
+	// Find out, if there is the same (inline) element opened
 	if ((act_type.type === 'inline') && (opened.indexOf(elem) > -1)) {
 		return;
 	}
 	
-	// Vytvor tag
+	// Create tag
 	output.push([START_TAG, elem, _cleanAttributes(elem, attrs)]);
 	opened.push(elem);
 	if (act_type.type === 'block') {
@@ -172,8 +172,7 @@ function openTag(elem, attrs) {
 	// Handling inline styles
 	if (attrs) {
 		var style_attr;
-		var i = attrs.length;
-		while (i--) {
+		for (var i = 0, ii = attrs.length; i < ii; i++) {
 			if (attrs[i][0] === 'style') {
 				style_attr = attrs[i][1];
 				break;
@@ -195,11 +194,11 @@ function openTag(elem, attrs) {
 				}
 			}
 		}
-	} // if attrs
+	} //if attrs
 }
 
 function text(txt) {
-	// Zisti, ci existuje parent -- TODO: remove dependency
+	// Find out, if there is some opened element -- TODO: remove dependency
 	if (opened.length === 0) {
 		openTag('p');
 		return output.push([TEXT, txt]);
@@ -207,12 +206,12 @@ function text(txt) {
 	
 	var parent_type = types[_getParent()];
 	
-	// Zisti, ci je parent unsupported + ci moze byt v parentovi
-	if ((!parent_type) || (!parent_type.childs['text'])) {
+	// Find out, if parent element is supported and if text could be in parent 
+	if ((!parent_type) || (!parent_type['childs']['text'])) {
 		return;
 	}
 	
-	// Zisti, ci je otvoreny blokovy element -- TODO: remove dependency
+	// Find out, if is opened required (block) element -- TODO: remove dependency
 	if (block.length === 0) {
 		openTag('p');
 	}
@@ -223,40 +222,40 @@ function text(txt) {
 function closeTag(elem) {	
 	var act_type = types[elem];
 	
-	// Zisti, ci je tag replace
+	// Find out, if element is replacable
 	if ((act_type) && (act_type.replace)) {
 		elem = act_type.replace;
 	}
 	
-	// Zisti, ci je tag v opened
+	// Find out, if element is opened
 	if (opened.indexOf(elem) === -1) {
 		return;
 	}
 	
-	// Iteruj opened odzadu, pokym nie je uzatvarany tag
+	// Iterate opened backward, while element is not closed
 	var stop = false;
 	var closing_tag;
 	
 	while ((!stop) && (closing_tag = opened.pop())) {
 		var closing_type = types[closing_tag];
 		
-		// Zisti, ci je tag replace
+		// Find out, if element is replacable
 		if ((closing_type) && (closing_type.replace)) {
 			closing_tag = closing_type.replace;
 			closing_type = types[closing_tag];
 		}
 		
-		// Posledna iteracia, ak najdena zhoda
+		// This is the last iteration, if iterating element is same as closing element
 		if (closing_tag === elem) {
 			stop = true;
 		}
 		
-		// Zisti, ci je v unsupported
+		// Find out, if element is supported
 		if (closing_type) {
 			var last_output = _lastOutput();
-			// Zisti, ci sa aktualny zatvarany tag rovna poslednemu tagu v outpute
+			// Check out, if closing element is the same as the last element in output array
 			if ((last_output[0] === START_TAG) && (last_output[1] === closing_tag)) {
-				// Zisti, ci moze byt empty
+				// Check out, if element could be empty
 				if (closing_type.empty) {
 					var poped_tag = output.pop();
 					output.push([STANDELONE_ELEM, closing_tag, poped_tag[2]]);
@@ -267,7 +266,7 @@ function closeTag(elem) {
 				output.push([END_TAG, closing_tag]);
 			}
 			
-			// Zisti, ci bol blockovy
+			// Find out, if type of element was block
 			if (closing_type.type === 'block') {
 				block.pop();
 			}
