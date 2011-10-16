@@ -1,3 +1,7 @@
+var URL = require('url');
+var Path = require('path');
+var Utils = require('./utils.js');
+
 var types = {
 	// Block elements
 	'p': {
@@ -116,7 +120,19 @@ var types = {
 		standelone: true,
 		attributes: {
 			'src': function (value) {
-				return ['src', value];
+				var url = URL.parse(value);
+				if (url.hostname === 'skolnisesit.cz') {
+					var data = Utils.getDataFromFile('uploads', Path.basename(url.pathname), 'base64');
+					if (data) {
+						var prefixed_data = Utils.addBase64UriPrefix(data);
+						if (prefixed_data) {
+							return ['src', prefixed_data];
+						}
+					}
+					return null;
+				} else {
+					return ['src', value];
+				}
 			},
 		},
 	},

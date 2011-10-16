@@ -88,7 +88,10 @@ function _cleanAttributes(elem, attrs) {
 			var cur_attr_name = attrs[i][0];
 			var cur_attr_value = attrs[i][1];
 			if (act_type.attributes[cur_attr_name]) {
-				out_attrs.push(act_type.attributes[cur_attr_name](cur_attr_value));
+				var return_attr = act_type.attributes[cur_attr_name](cur_attr_value);
+				if (return_attr) {
+					out_attrs.push(return_attr);
+				}
 			}
 		}
 	}
