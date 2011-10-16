@@ -90,6 +90,11 @@ var types = {
 		type: 'inline',
 		child_types: ['%inline%', '%text%'],
 	},
+	's': {
+		tag_name: 'strike',
+		type: 'inline',
+		child_types: ['%inline%', '%text%'],
+	},
 	'strike': {
 		tag_name: 'strike',
 		type: 'inline',
