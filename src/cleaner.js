@@ -1,12 +1,10 @@
 /**
  * HTMLCleaner cleans input string or file
- * HTMLCleaner fires four types of event - start, data, end, error
+ * HTMLCleaner returns cleaned data in callback function
  *
  * @author Matej Paulech <matej.paulech@gmail.com>
  */
 
-var EventEmitter = require('events').EventEmitter;
-var sys = require('sys');
 var fs = require('fs');
 var xml = require('../lib/node-xml');
 var types = require('./types.js');
@@ -21,19 +19,14 @@ var TEXT = 'tx';
 var STANDELONE_ELEM = 'se';
 
 var use_cdata = true;
-var emitter;
 var writer;
 
 /**
  * @constructor
  */
 function HTMLCleaner() {
-	EventEmitter.call(this);
-	emitter = this;
-	this.xmlParser = new xml.SaxParser(parsing);
-	writer = new Writer(types, emitter, use_cdata);
+	writer = new Writer(types, use_cdata);
 }
-sys.inherits(HTMLCleaner, EventEmitter);
 
 module.exports = HTMLCleaner;
 
@@ -41,23 +34,79 @@ module.exports = HTMLCleaner;
  * Start cleaning input string
  * @params {String} string String to clean
  */
-HTMLCleaner.prototype.cleanString = function (string) {
-	this.xmlParser.parseString('<' + ROOT_EL + '>' + string + '</' + ROOT_EL + '>');
+HTMLCleaner.prototype.cleanString = function (string, callback) {
+	var parsing = function (cb) {
+		cb.onStartDocument(function () {
+			output = [];
+			opened = [];
+			block = [];
+		});
+		
+		cb.onEndDocument(function () {
+			while (opened.length > 0) {
+				closeTag(_getParent());
+			}		
+			callback(writer.parse(output));
+			
+			// DEBUG
+			// console.log('=== OUTPUT ===');
+			// output.forEach(function (out) {
+			// 	console.log(out);
+			// })
+			// console.log('=== /OUTPUT ===');
+			// /DEBUG
+		});
+		
+		cb.onStartElementNS(function (elem, attrs, prefix, uri, namespaces) {
+			if (elem === ROOT_EL) return;
+			if (prefix) {
+				elem  = prefix + ':' + elem;
+			}
+			openTag(elem.toLowerCase(), attrs);
+		});
+
+		cb.onEndElementNS(function (elem, prefix, uri) {
+			if (elem === ROOT_EL) return;
+			if (prefix) {
+				elem = prefix + ':' + elem
+			}
+			closeTag(elem.toLowerCase());
+		});
+
+		cb.onCharacters(function (chars) {
+			chars = chars.replace('\n', '');
+			if (chars.trim().length > 0) {
+				text(chars);
+			}
+		});
+
+		cb.onCdata(function (cdata) {
+			// console.log('<CDATA>' + cdata + "</CDATA>");
+		});
+		cb.onComment(function (msg) {
+			// console.log('<COMMENT>' + msg + "</COMMENT>");
+		});
+		cb.onWarning(function (msg) {
+			console.warn('<WARNING>' + msg + "</WARNING>");
+		});
+		cb.onError(function (msg) {
+			console.error('<ERROR>' + JSON.stringify(msg) + "</ERROR>");
+		});
+	};
+
+	var xmlParser = new xml.SaxParser(parsing);
+	xmlParser.parseString('<' + ROOT_EL + '>' + string + '</' + ROOT_EL + '>');
 }
 
 /**
  * Start cleaning input file
  * @params {String} filename File to clean
  */
-HTMLCleaner.prototype.cleanFile = function (filename) {
+HTMLCleaner.prototype.cleanFile = function (filename, callback) {
 	fs.readFile(filename, 'utf8', function (err, data) {
 		if (err) return outputError(err.message);
-		this.cleanString(data);
+		this.cleanString(data, callback);
 	}.bind(this));
-}
-
-function outputError(err) {
-	emitter.emit('error', err);
 }
 
 /* CLEANER */
@@ -275,65 +324,4 @@ function closeTag(elem) {
 			}
 		} //end_if unsupported
 	} // end_while
-}
-
-function parsing(cb) {
-	cb.onStartDocument(function () {
-		output = [];
-		opened = [];
-		block = [];
-		emitter.emit('start');
-	});
-	
-	cb.onEndDocument(function () {
-		while (opened.length > 0) {
-			closeTag(_getParent());
-		}		
-		writer.parse(output);
-		emitter.emit('end');
-		
-		// DEBUG
-		// console.log('=== OUTPUT ===');
-		// output.forEach(function (out) {
-		// 	console.log(out);
-		// })
-		// console.log('=== /OUTPUT ===');
-		// /DEBUG
-	});
-	
-	cb.onStartElementNS(function (elem, attrs, prefix, uri, namespaces) {
-		if (elem === ROOT_EL) return;
-		if (prefix) {
-			elem  = prefix + ':' + elem;
-		}
-		openTag(elem.toLowerCase(), attrs);
-	});
-
-	cb.onEndElementNS(function (elem, prefix, uri) {
-		if (elem === ROOT_EL) return;
-		if (prefix) {
-			elem = prefix + ':' + elem
-		}
-		closeTag(elem.toLowerCase());
-	});
-
-	cb.onCharacters(function (chars) {
-		chars = chars.replace('\n', '');
-		if (chars.trim().length > 0) {
-			text(chars);
-		}
-	});
-
-	cb.onCdata(function (cdata) {
-		console.error('<CDATA>' + cdata + "</CDATA>");
-	});
-	cb.onComment(function (msg) {
-		// console.error('<COMMENT>' + msg + "</COMMENT>");
-	});
-	cb.onWarning(function (msg) {
-		console.error('<WARNING>' + msg + "</WARNING>");
-	});
-	cb.onError(function (msg) {
-		outputError('<ERROR>' + JSON.stringify(msg) + "</ERROR>");
-	});
 }

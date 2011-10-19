@@ -1,5 +1,4 @@
 var types;
-var emitter;
 var use_cdata;
 var cdata_opened;
 
@@ -8,20 +7,22 @@ var END_TAG = 'et';
 var TEXT = 'tx';
 var STANDELONE_ELEM = 'se';
 
-function Writer(in_types, in_emitter, in_use_cdata) {
+function Writer(in_types, in_use_cdata) {
 	types = in_types;
-	emitter = in_emitter;
 	use_cdata = in_use_cdata;
 }
 
 module.exports = Writer;
 
-Writer.prototype.parse = function (output) {
+var output;
+
+Writer.prototype.parse = function (input) {
 	cdata_opened = false;
-	for (var i = 0, ii = output.length; i < ii; i++) {
-		var type = output[i][0];
-		var value = output[i][1];
-		var attrs = output[i][2];
+	output = '';
+	for (var i = 0, ii = input.length; i < ii; i++) {
+		var type = input[i][0];
+		var value = input[i][1];
+		var attrs = input[i][2];
 
 		switch (type) {
 			case START_TAG:
@@ -38,10 +39,11 @@ Writer.prototype.parse = function (output) {
 				break;
 		}
 	}
+	return output;
 }
 
 function write(data) {
-	emitter.emit('data', data);
+	output += data;
 }
 
 function openCDATA() {
