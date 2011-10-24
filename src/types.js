@@ -121,12 +121,16 @@ var types = {
 		attributes: {
 			'src': function (value) {
 				var url = URL.parse(value);
-				if (url.hostname === 'skolnisesit.cz') {
-					var data = Utils.getDataFromFile('uploads', Path.basename(url.pathname), 'base64');
-					if (data) {
-						var prefixed_data = Utils.addBase64UriPrefix(data);
-						if (prefixed_data) {
-							return ['src', prefixed_data];
+				var re_uploads = /\/uploads\/([0-9]{1,6}-[0-9]{13})$/;
+
+				var uploads = re_uploads.exec(url['pathname']);
+				
+				if ((uploads) && (uploads[1])) {
+					var image_data = Utils.getDataFromFile('uploads', uploads[1], 'base64');
+					if (image_data) {
+						var prefixed_image_data = Utils.addBase64UriPrefix(image_data);
+						if (prefixed_image_data) {
+							return ['src', prefixed_image_data];
 						}
 					}
 					return null;
