@@ -10,13 +10,13 @@ var Path = require('path');
  */
 module.exports.addBase64UriPrefix = function (data) {
 	var getImageType = function (data) {
-		if (data.search('/9j/') > -1) {
+		if (data.search(/^\/9j\//) > -1) {
 			return type = 'image/jpeg';
 		}
-		if (data.search('R0lGOD') > -1) {
+		if (data.search(/^R0lGOD/) > -1) {
 			return type = 'image/gif';
 		}
-		if (data.search('iVBORw0KGgo') > -1) {
+		if (data.search(/^iVBORw0KGgo/) > -1) {
 			return type = 'image/png';
 		}
 		return null;
