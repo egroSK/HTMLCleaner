@@ -19,6 +19,9 @@ module.exports.addBase64UriPrefix = function (data) {
 		if (data.search(/^iVBORw0KGgo/) > -1) {
 			return type = 'image/png';
 		}
+		if (data.search(/^Qk/) > -1) {
+			return type = 'image/bmp';
+		}
 		return null;
 	};
 
