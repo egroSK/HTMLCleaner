@@ -32,7 +32,8 @@ module.exports = HTMLCleaner;
 
 /**
  * Start cleaning input string
- * @params {String} string String to clean
+ * @param {String} string String to clean
+ * @param {function(string, string)} callback The callback function(err, data) 
  */
 HTMLCleaner.prototype.cleanString = function (string, callback) {
 	var parsing = function (cb) {
@@ -46,7 +47,7 @@ HTMLCleaner.prototype.cleanString = function (string, callback) {
 			while (opened.length > 0) {
 				closeTag(_getParent());
 			}		
-			callback(writer.parse(output));
+			callback(null, writer.parse(output));
 			
 			// DEBUG
 			// console.log('=== OUTPUT ===');
@@ -90,7 +91,7 @@ HTMLCleaner.prototype.cleanString = function (string, callback) {
 			console.warn('<WARNING>' + msg + "</WARNING>");
 		});
 		cb.onError(function (msg) {
-			console.error('<ERROR>' + JSON.stringify(msg) + "</ERROR>");
+			callback(JSON.stringify(msg));
 		});
 	};
 
@@ -104,7 +105,9 @@ HTMLCleaner.prototype.cleanString = function (string, callback) {
  */
 HTMLCleaner.prototype.cleanFile = function (filename, callback) {
 	fs.readFile(filename, 'utf8', function (err, data) {
-		if (err) return outputError(err.message);
+		if (err) {
+			return callback(err.message);
+		}
 		this.cleanString(data, callback);
 	}.bind(this));
 }
