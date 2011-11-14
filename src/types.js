@@ -120,22 +120,12 @@ var types = {
 		standelone: true,
 		attributes: {
 			'src': function (value) {
-				var url = URL.parse(value);
-				var re_uploads = /\/uploads\/([0-9]{1,6}-[0-9]{13})$/;
-
-				var uploads = re_uploads.exec(url['pathname']);
-				
-				if ((uploads) && (uploads[1])) {
-					var image_data = Utils.getDataFromFile('uploads', uploads[1], 'base64');
-					if (image_data) {
-						var prefixed_image_data = Utils.addBase64UriPrefix(image_data);
-						if (prefixed_image_data) {
-							return ['src', prefixed_image_data];
-						}
-					}
-					return null;
+				var hashed_value = Utils.createHash('md5', Date.now() + Math.random() + '_' + value, 'hex');
+				if (hashed_value) {
+					Utils.writeDataToFile('', 'img_src.json', '"' + hashed_value + '":"' + value + '"\n');
+					return ['src-id', hashed_value];
 				} else {
-					return ['src', value];
+					return null;
 				}
 			},
 		},
