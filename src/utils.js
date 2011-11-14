@@ -90,6 +90,7 @@ module.exports.getDataFromFile = function (path, filename, encoding) {
 		return null;
 	}
 }
+
 /**
  * Write data to file with given filename.
  * @param {string} path Path of file
