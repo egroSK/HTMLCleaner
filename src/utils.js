@@ -123,3 +123,21 @@ module.exports.createHash = function (algorithm, data, encoding) {
 	}
 }
 
+/**
+ * Return encrypted data.
+ * @param {string} algorithm Encrypt algorithm is dependent on OpenSSL, examples are 'aes192', etc.
+ * @param {string} data Data to be encrypted.
+ * @param {?string} encoding Encoding of the output. Accepted encodings are - base64, binary, hex. Default is binary.
+ * @return {string|null}
+ */
+module.exports.encryptString = function (algorithm, data, encoding) {
+	encoding = (['base64', 'binary', 'hex'].indexOf(encoding) > -1) ? encoding : 'binary';
+	try {
+		var encrypter = crypto.createCipher(algorithm, 'hasher');
+		var encrypted_string = encrypter.update(data, 'utf8', encoding);
+		return encrypted_string + encrypter.final(encoding);
+	} catch (e) {
+		console.warn('Utils:encryptString(' + algorithm + ', ' + data + ' ,' + encoding + ') FAILED with "' + e + '"');
+		return null;
+	}
+}
