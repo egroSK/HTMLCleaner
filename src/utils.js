@@ -89,3 +89,19 @@ module.exports.getDataFromFile = function (path, filename, encoding) {
 		return null;
 	}
 }
+/**
+ * Write data to file with given filename.
+ * @param {string} path Path of file
+ * @param {string} filename Name of file
+ * @param {string} data Data to write
+ */
+module.exports.writeDataToFile = function (path, filename, data) {
+	try {
+		var fd = fs.openSync(Path.join(path, filename), 'a');
+		fs.writeSync(fd, data);
+		fs.closeSync(fd);
+	} catch (e) {
+		console.warn('Utils:writeDataToFile FAILED with "' + e + '"');
+	}
+}
+
