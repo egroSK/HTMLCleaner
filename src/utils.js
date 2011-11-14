@@ -2,6 +2,7 @@ var http = require('http');
 var URL = require('url');
 var fs = require('fs');
 var Path = require('path');
+var crypto = require('crypto');
 
 /**
  * Add data:uri prefix to base64 data(image).
@@ -102,6 +103,23 @@ module.exports.writeDataToFile = function (path, filename, data) {
 		fs.closeSync(fd);
 	} catch (e) {
 		console.warn('Utils:writeDataToFile FAILED with "' + e + '"');
+	}
+}
+
+/**
+ * Return hashed data.
+ * @param {string} algorithm Hash algorithm is dependent on the available algorithms supported by the version of OpenSSL on the platform. Examples are 'sha1', 'md5', 'sha256', 'sha512', etc.
+ * @param {string} data Data to be hashed.
+ * @param {?string} encoding Encoding of the output. Accepted encodings are - base64, binary, hex. Default is binary.
+ * @return {string|null}
+ */
+module.exports.createHash = function (algorithm, data, encoding) {
+	encoding = (['base64', 'binary', 'hex'].indexOf(encoding) > -1) ? encoding : 'binary';
+	try {
+		return crypto.createHash(algorithm).update(data).digest(encoding);
+	} catch (e) {
+		console.warn('Utils:createHash(' + algorithm + ', ' + data + ' ,' + encoding + ') FAILED with "' + e + '"');
+		return null;
 	}
 }
 
