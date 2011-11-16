@@ -122,7 +122,7 @@ var types = {
 			'src': function (value) {
 				var hashed_value = Utils.createHash('md5', Date.now() + Math.random() + '_' + value, 'hex');
 				if (hashed_value) {
-					Utils.writeDataToFile('', 'img_src.json', '"' + hashed_value + '":"' + value + '"\n');
+					Utils.writeDataToFile('', 'img_src.json', '"' + hashed_value + '":"' + value.replace(/\\/g, '\\\\').replace(/"/g, '\\"') + '"\n');
 					return ['src-id', hashed_value];
 				} else {
 					return null;
