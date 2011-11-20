@@ -166,7 +166,7 @@ var types = {
 		tag_name: 'text',
 		tag_attrs: {
 		'type': function (parent) {
-				return ['list', (parent === 'ol') ? 'number' : 'dash'];
+				return ['list', (parent === 'ol') ? 'number' : 'disc'];
 			}
 		},
 		type: 'list_item',
