@@ -197,9 +197,9 @@ function openTag(elem, attrs) {
 	}
 	
 	// Find out, if there is the same (inline) element opened
-	if ((act_type.type === 'inline') && (opened.indexOf(elem) > -1)) {
-		return;
-	}
+	// if ((act_type.type === 'inline') && (opened.indexOf(elem) > -1)) {
+	// 	return;
+	// }
 	
 	// Create tag
 	output.push([START_TAG, elem, _cleanAttributes(elem, attrs)]);
