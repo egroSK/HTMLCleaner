@@ -156,11 +156,11 @@ var types = {
 	// Lists
 	'ul': {
 		type: 'block',
-		child_types: ['%list_item%']
+		child_types: ['%list_item%', 'ul', 'ol']
 	},
 	'ol': {
 		type: 'block',
-		child_types: ['%list_item%']
+		child_types: ['%list_item%', 'ul', 'ol']
 	},
 	'li': {
 		tag_name: 'text',
