@@ -126,6 +126,10 @@ function _lastOutput() {
 	return output[output.length - 1];
 }
 
+function _beforeLastOutput() {
+	return output[output.length - 2];
+}
+
 function _cleanAttributes(elem, attrs) {
 	var out_attrs = [];
 	var act_type = types[elem];
@@ -312,8 +316,14 @@ function closeTag(elem) {
 			if ((last_output[0] === START_TAG) && (last_output[1] === closing_tag)) {
 				// Check out, if element could be empty
 				if (closing_type.empty) {
-					var poped_tag = output.pop();
-					output.push([STANDELONE_ELEM, closing_tag, poped_tag[2]]);
+					// There can be only one empty element in a row -- TODO: remove dependency
+					var before_last_output = _beforeLastOutput();
+					if ((before_last_output) && (before_last_output[0] === STANDELONE_ELEM)) {
+						output.pop();
+					} else {
+						var poped_tag = output.pop();
+						output.push([STANDELONE_ELEM, closing_tag, poped_tag[2]]);							
+					}
 				} else {
 					output.pop();
 				}
